@@ -578,7 +578,7 @@ class KlustRDataSourceViewWidget(QWidget):
 def main():
     app = QApplication(sys.argv)
 
-    # credential = PostgreSQLCredential(password='AAAaaa123')
+    #credential = PostgreSQLCredential(password='AAAaaa111') --> chez moi !! NE PAS EFFACER PLSSS -fatou
     credential = PostgreSQLCredential(password='123')
     klustr_dao = PostgreSQLKlustRDAO(credential)
     source_data_widget = KlustRDataSourceViewWidget(klustr_dao)
