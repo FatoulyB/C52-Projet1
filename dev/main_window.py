@@ -27,26 +27,26 @@ assert "snake_case" in feature.info() and "true_property" in feature.info()
 from db_credential import PostgreSQLCredential
 from klustr_dao import PostgreSQLKlustRDAO
 from knn_classification_view import KnnClassification
+from db_dao import DBDAO
 
 class MainWindow(QWidget):
 
-    def __init__(self, dao):
+    def __init__(self):
         super().__init__()
 
         self.window_title = 'KlustR KNN Classifier'
-        self.__dao = dao
+     
 
         self.layout = QVBoxLayout(self)
-        self.layout.add_widget(KnnClassification(dao)) 
+        self.layout.add_widget(KnnClassification()) 
 
 def main():
     app = QApplication(sys.argv)
-    #credential = PostgreSQLCredential(password='123') 
-    credential = PostgreSQLCredential(password='AAAaaa111') #--> chez moi !! NE PAS EFFACER PLSSS -fatou
-    dao =PostgreSQLKlustRDAO(credential)
 
-    window = MainWindow(dao)
+    window = MainWindow()
     window.show()
+    db = DBDAO()
+    print(db.available_datasets())
 
     sys.exit(app.exec())
 

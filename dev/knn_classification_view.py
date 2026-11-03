@@ -27,9 +27,8 @@ from scatter_3d_viewer import QScatter3dViewer
 
 
 class KnnClassification(QWidget):
-    def __init__(self,dao, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.__dao = dao
 
         self.__data_set_box = QGroupBox('Dataset')
         self.__single_test_box = QGroupBox('Single test')
