@@ -39,7 +39,8 @@ class KnnClassification(QWidget):
         self.__single_test_box.set_layout(QVBoxLayout())
         self.__knn_param_box.set_layout(QVBoxLayout())
 
-        self.__data_set_box.layout().add_widget(QLabel("phase 1  a faire"))
+        # self.__data_set_box.layout().add_widget(QLabel("phase 1  a faire"))
+        self.__setup_data_set_box()
         self.__single_test_box.layout().add_widget(QLabel("phase 1  a faire"))
         self.__knn_param_box.layout().add_widget(QLabel("phase 1  a faire"))
 
@@ -62,6 +63,12 @@ class KnnClassification(QWidget):
         main_layout = QHBoxLayout(self)
         main_layout.add_layout(left_layout)
         main_layout.add_widget(self.__scatter, 1)
+
+
+    def __setup_data_set_box(self):
+        
+        self.__dataset_list = QListView()
+
 
 
 

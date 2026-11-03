@@ -41,8 +41,8 @@ class MainWindow(QWidget):
 
 def main():
     app = QApplication(sys.argv)
-    credential = PostgreSQLCredential(password='123') 
-    #credential = PostgreSQLCredential(password='AAAaaa111') --> chez moi !! NE PAS EFFACER PLSSS -fatou
+    #credential = PostgreSQLCredential(password='123') 
+    credential = PostgreSQLCredential(password='AAAaaa111') #--> chez moi !! NE PAS EFFACER PLSSS -fatou
     dao =PostgreSQLKlustRDAO(credential)
 
     window = MainWindow(dao)
