@@ -37,7 +37,7 @@ class AnalyseImage:
         return np.sum(image)
            
     @staticmethod
-    def simplification(image):
+    def metrique_simplification(image):
         aire = AnalyseImage.calculer_aire(image)
         perimetre = AnalyseImage.calculer_perimetre(image)
         if(perimetre <= 0):
@@ -48,6 +48,7 @@ class AnalyseImage:
     @staticmethod
     def metrique_2():
         # Prendre le np array
+        AnalyseImage.png_to_numpy_array()
         pass
 
     @staticmethod
