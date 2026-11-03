@@ -9,7 +9,7 @@ from PySide6.QtGui import  (QImage, QPixmap, QIcon, QPainter, QFont, QPen, QBrus
 class AnalyseImage:
 
     @staticmethod
-    def png_to_numpy_array(img_png):
+    def png_to_nd_array(img_png):
         #DOIT METTRE L'IMAGE PNG DANS LES PARAM DE qimage_argb32_from_png_decoding()
         qimage = qimage_argb32_from_png_decoding(img_png)
         nd_array = ndarray_from_qimage_argb32(qimage)
@@ -48,7 +48,15 @@ class AnalyseImage:
     @staticmethod
     def metrique_2():
         # Prendre le np array
-        AnalyseImage.png_to_numpy_array()
+        shape = np.array
+        shape = AnalyseImage.png_to_nd_array()
+
+        # analyser le ndarray
+        
+
+        #retourner la valeur de la métrique
+
+
         pass
 
     @staticmethod
