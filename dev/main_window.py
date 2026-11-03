@@ -45,8 +45,7 @@ def main():
 
     window = MainWindow()
     window.show()
-    db = DBDAO()
-    print(db.available_datasets())
+
 
     sys.exit(app.exec())
 
