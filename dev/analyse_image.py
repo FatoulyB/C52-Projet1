@@ -46,13 +46,20 @@ class AnalyseImage:
         
 
     @staticmethod
-    def metrique_2():
-        # Prendre le np array
-        shape = np.array
-        shape = AnalyseImage.png_to_nd_array()
+    def metrique_circle_filling():
+        # Prendre le nd array
+        #shape = AnalyseImage.png_to_nd_array()
+        shape = np.array([[0,0,0,0,0,0,0,0,0],
+                         [0,0,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,0,0],
+                         [0,0,1,1,1,1,1,0,0],
+                         [0,0,0,0,0,0,0,0,0]])
+        
 
         # analyser le ndarray
-        
+        # trouver centroid avec fonction du prof 
+        # tracer cercle fictif
+        # verifier % de remplissage
 
         #retourner la valeur de la métrique
 
