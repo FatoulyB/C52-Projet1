@@ -73,6 +73,7 @@ class KlustRDAO(ABC):
 # TO DO : APPLY TRANSFORMATION FILTERS!!! AND move to serverside function
 class PostgreSQLKlustRDAO(KlustRDAO):
     def __init__(self, pg_connection_credential, quit_if_connection_failed=False):
+        super().__init__()
         self._pg_connection_credential = pg_connection_credential
         try:
             self.pg_connection = pg.connect(self._pg_connection_credential.connection_string)
