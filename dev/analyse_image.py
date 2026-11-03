@@ -1,8 +1,20 @@
 import numpy as np
 import math
+from klustr_utils import qimage_argb32_from_png_decoding, ndarray_from_qimage_argb32
+from PySide6.QtGui import  (QImage, QPixmap, QIcon, QPainter, QFont, QPen, QBrush, QColor, 
+                            QStandardItemModel, QStandardItem,
+                            QClipboard)
 
 
 class AnalyseImage:
+
+    @staticmethod
+    def png_to_numpy_array(img_png):
+        #DOIT METTRE L'IMAGE PNG DANS LES PARAM DE qimage_argb32_from_png_decoding()
+        qimage = qimage_argb32_from_png_decoding(img_png)
+        nd_array = ndarray_from_qimage_argb32(qimage)
+        return nd_array
+        
 
     @staticmethod
     def calculer_perimetre(image):
@@ -21,7 +33,7 @@ class AnalyseImage:
         return int(np.sum(contour))
 
     @staticmethod
-    def metrique_1(image):
+    def calculer_aire(image):
         return np.sum(image)
            
     @staticmethod
@@ -34,7 +46,8 @@ class AnalyseImage:
         
 
     @staticmethod
-    def mertique_2():
+    def metrique_2():
+        # Prendre le np array
         pass
 
     @staticmethod
@@ -53,6 +66,6 @@ class AnalyseImage:
 #print(a[:-2, 1:-1])    # haut
 #print(a[2:5, 1:3])
 
-masque = np.zeros((150, 150), dtype=bool)
-masque[1:4, 1:4] = True
-print(AnalyseImage.metrique_1(masque))
+# masque = np.zeros((150, 150), dtype=bool)
+# masque[1:4, 1:4] = True
+# print(AnalyseImage.metrique_1(masque))
