@@ -25,27 +25,32 @@ assert "snake_case" in feature.info() and "true_property" in feature.info()
 
 from scatter_3d_viewer import QScatter3dViewer
 
+from db_dao import get_all_dataset_titles, get_dataset_infos
 
+selected_dataset = get_dataset_infos("ABC")
 
 class DatasetInformation(QGroupBox):
     def __init__(self, parent=None):
-        super().__init__('Inclded in dataset', parent)
+        super().__init__('Inculded in dataset', parent)
         self.__category = QLabel()
         self.__training_image_count = QLabel()
         self.__test__image_count = QLabel()
         self.__total__image_count = QLabel()
 
         layout = QFormLayout(self)
-        layout.add_row('Category count :', self.__category)
-        layout.add_row('Training image count :', self.__training_image_count)
-        layout.add_row('Test image count :', self.__test__image_count)
-        layout.add_row('Total image count :', self.__total__image_count)
+        layout.add_row(f'Category count : {'jsp c quoi ca'}', self.__category)
+        layout.add_row(f'Training image count : {selected_dataset[6]}', self.__training_image_count)
+        layout.add_row(f'Test image count : {selected_dataset[7]}', self.__test__image_count)
+        layout.add_row(f'Total image count : {selected_dataset[8]}', self.__total__image_count)
 
-    @Slot()
-    def update_info(self):
+    @Slot(str)
+    def update_info(self, dataset_name):
+        # self.__category.set_text(str(get_dataset_infos(dataset_name)))
+        # self.__training_image_count.set_text(str(dataset_name[6]))
+        # self.__test__image_count.set_text(str(dataset_name[7]))
+        # self.__total__image_count.set_text(str(dataset_name[8]))
         pass
-
-        # c'est quoi l'inpact sur le k question 
+        # c'est quoi l'impact sur le k question 
 
 class DatasetInfoTransfirmation(QGroupBox):
     def __init__(self, parent=None):
@@ -56,15 +61,16 @@ class DatasetInfoTransfirmation(QGroupBox):
 
         layout = QFormLayout(self)
         layout.add_row('Translated', self.__translated)
-        layout.add_row('Rotaded', self.__rotated)
+        layout.add_row('Rotated', self.__rotated)
         layout.add_row('Scaled', self.__scaled)
-    
+
     @Slot()
     def update_info(self):
         pass   
 
-class DatatsetBox(QGroupBox):
+class DatasetBox(QGroupBox):
     eventTriggered = Signal() 
+    dataset_selected = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__('Dataset', parent)
@@ -73,7 +79,12 @@ class DatatsetBox(QGroupBox):
     def __setup_data_set_box(self):
         self.__dataset_list = QComboBox()
         self.__included_dataset = DatasetInformation()
-        self.__transformation = DatasetInformation()
+        self.__transformation = DatasetInfoTransfirmation()
+
+
+        self.__dataset_list.add_items(get_all_dataset_titles())
+
+        self.__dataset_list.currentTextChanged.connect(self.on_text_changed)
 
 
         main_layout = QVBoxLayout()
@@ -86,6 +97,11 @@ class DatatsetBox(QGroupBox):
         main_layout.add_layout(layout)
 
         self.set_layout(main_layout)
+
+    @Slot()
+    def on_text_changed(self, text):
+        self.dataset_selected.emit(text)
+        self.__included_dataset.update_info(text)
 
 
 
@@ -107,7 +123,7 @@ class SingleTestBox(QGroupBox):
         layout.add_widget(self.__img_list)
         layout.add_widget(self.__image)
         layout.add_widget(self.__button_classify)
-
+        
         self.set_layout(layout)
         
 
@@ -120,7 +136,7 @@ class KNNParamBox(QGroupBox):
         self.__max_dist = QLabel('Max dist = ')
 
         self.__k.alignment = Qt.AlignCenter
-        self.__max_dist = Qt.AligCenter
+        self.__max_dist.alignment = Qt.AlignCenter
 
         layout = QVBoxLayout()
         layout.add_widget(self.__k)
@@ -135,17 +151,16 @@ class KNNParamBox(QGroupBox):
 
 
 class KnnClassification(QWidget):
+    dataset_selected = Signal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.__data_set_box = DatatsetBox()
+        self.__data_set_box = DatasetBox()
+        self.__data_set_box.dataset_selected.connect(self.dataset_selected.emit)
+
         self.__single_test_box = SingleTestBox()
         self.__knn_param_box = KNNParamBox()
-
-        self.__data_set_box.set_layout(QVBoxLayout())
-        self.__single_test_box.set_layout(QVBoxLayout())
-        self.__knn_param_box.set_layout(QVBoxLayout())
-
 
         left_layout = QVBoxLayout()
         left_layout.add_widget(self.__data_set_box)
@@ -166,6 +181,5 @@ class KnnClassification(QWidget):
         main_layout = QHBoxLayout(self)
         main_layout.add_layout(left_layout)
         main_layout.add_widget(self.__scatter, 1)
-
 
                 

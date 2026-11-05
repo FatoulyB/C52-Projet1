@@ -3,20 +3,39 @@ import klustr_dao as kd
 from db_credential import PostgreSQLCredential
 
 
-credential = PostgreSQLCredential(password='AAAaaa123')
+
+
+
+credential = PostgreSQLCredential(password='AAAaaa111')
 dao = kd.PostgreSQLKlustRDAO(credential)
 
-results = dao.available_datasets
+def get_all_dataset_titles():
+    all_dataset_names = []
+    for result in dao.available_datasets:
+        dataset_name = result[1]
+        all_dataset_names.append(dataset_name)
+    return all_dataset_names
 
-# BON BHAY 
-atchoum = dao.image_from_dataset("ABC", True)
+def get_dataset_images(title):
+    results = dao.image_from_dataset(title, True)
+    images = []
 
-# for dataset in results:
-#     dataset_label_id = dataset[0]
-#     dataset_name = dataset[1]
-#     dataset_image = dataset[5]
-#     thumbnail = dataset[6]
+    for result in results:
+        qimage = ku.QtNpConvert.qimage_from_png(result[6])
+        np = ku.QtNpConvert.np_from_qimage(qimage)
+        images.append(np)
     
-#     image_qimage = ku.QtNpConvert.qimage_from_png(thumbnail)
+    return images
 
-#     image_np = ku.QtNpConvert.np_from_qimage(image_qimage)
+def get_dataset_infos(title):
+    for dataset in dao.available_datasets:
+        if dataset[1] == title:
+            return dataset
+    return None
+
+
+if __name__ == "__main__":
+    images = get_dataset_images("ABC")
+    datasets = get_all_dataset_titles()
+    dataset = get_dataset_infos("Alpha-Full-Large")
+    pass
