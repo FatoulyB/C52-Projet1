@@ -50,10 +50,11 @@ class DatasetInformation(QGroupBox):
             dataset = get_dataset_infos("ABC")
             return
 
-        self.__category.set_text(str(dataset[5]))
-        self.__training_image_count.set_text(str(dataset[6]))
-        self.__test__image_count.set_text(str(dataset[7]))
-        self.__total__image_count.set_text(str(dataset[8]))
+        self.__category.text = (str(dataset[5]))
+        self.__training_image_count.text = (str(dataset[6]))
+        self.__test__image_count.text = (str(dataset[7]))
+        self.__total__image_count.text = (str(dataset[8]))
+        
 
 class DatasetInfoTransformation(QGroupBox):
     def __init__(self, parent=None):
@@ -74,9 +75,9 @@ class DatasetInfoTransformation(QGroupBox):
             dataset = get_dataset_infos("ABC")
             return
 
-        self.__translated.set_text(str(dataset[2]))
-        self.__rotated.set_text(str(dataset[3]))
-        self.__scaled.set_text(str(dataset[4]))
+        self.__translated.text = (str(dataset[2]))
+        self.__rotated.text = (str(dataset[3]))
+        self.__scaled.text = (str(dataset[4]))
 
 class DatasetBox(QGroupBox):
     eventTriggered = Signal() 
@@ -112,7 +113,7 @@ class DatasetBox(QGroupBox):
         self.__included_dataset.update_info("ABC")
         self.__transformation.update_info("ABC")
 
-    @Slot()
+    @Slot(str)
     def on_text_changed(self, text):
         self.dataset_selected.emit(text)
         self.__included_dataset.update_info(text)
