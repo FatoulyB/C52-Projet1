@@ -38,21 +38,24 @@ class DatasetInformation(QGroupBox):
         self.__total__image_count = QLabel()
 
         layout = QFormLayout(self)
-        layout.add_row(f'Category count : {'jsp c quoi ca'}', self.__category)
-        layout.add_row(f'Training image count : {selected_dataset[6]}', self.__training_image_count)
-        layout.add_row(f'Test image count : {selected_dataset[7]}', self.__test__image_count)
-        layout.add_row(f'Total image count : {selected_dataset[8]}', self.__total__image_count)
+        layout.add_row(f'Category count : ', self.__category)
+        layout.add_row(f'Training image count : ', self.__training_image_count)
+        layout.add_row(f'Test image count : ', self.__test__image_count)
+        layout.add_row(f'Total image count : ', self.__total__image_count)
 
     @Slot(str)
     def update_info(self, dataset_name):
-        # self.__category.set_text(str(get_dataset_infos(dataset_name)))
-        # self.__training_image_count.set_text(str(dataset_name[6]))
-        # self.__test__image_count.set_text(str(dataset_name[7]))
-        # self.__total__image_count.set_text(str(dataset_name[8]))
-        pass
-        # c'est quoi l'impact sur le k question 
+        dataset = get_dataset_infos(dataset_name)
+        if dataset is None:
+            dataset = get_dataset_infos("ABC")
+            return
 
-class DatasetInfoTransfirmation(QGroupBox):
+        self.__category.set_text(str(dataset[5]))
+        self.__training_image_count.set_text(str(dataset[6]))
+        self.__test__image_count.set_text(str(dataset[7]))
+        self.__total__image_count.set_text(str(dataset[8]))
+
+class DatasetInfoTransformation(QGroupBox):
     def __init__(self, parent=None):
         super().__init__('Transformation', parent)
         self.__translated = QLabel()
@@ -60,13 +63,20 @@ class DatasetInfoTransfirmation(QGroupBox):
         self.__scaled = QLabel()
 
         layout = QFormLayout(self)
-        layout.add_row('Translated', self.__translated)
-        layout.add_row('Rotated', self.__rotated)
-        layout.add_row('Scaled', self.__scaled)
+        layout.add_row('Translated : ', self.__translated)
+        layout.add_row('Rotated : ', self.__rotated)
+        layout.add_row('Scaled : ', self.__scaled)
 
-    @Slot()
-    def update_info(self):
-        pass   
+    @Slot(str)
+    def update_info(self, dataset_name):
+        dataset = get_dataset_infos(dataset_name)
+        if dataset is None:
+            dataset = get_dataset_infos("ABC")
+            return
+
+        self.__translated.set_text(str(dataset[2]))
+        self.__rotated.set_text(str(dataset[3]))
+        self.__scaled.set_text(str(dataset[4]))
 
 class DatasetBox(QGroupBox):
     eventTriggered = Signal() 
@@ -79,7 +89,7 @@ class DatasetBox(QGroupBox):
     def __setup_data_set_box(self):
         self.__dataset_list = QComboBox()
         self.__included_dataset = DatasetInformation()
-        self.__transformation = DatasetInfoTransfirmation()
+        self.__transformation = DatasetInfoTransformation()
 
 
         self.__dataset_list.add_items(get_all_dataset_titles())
@@ -98,10 +108,15 @@ class DatasetBox(QGroupBox):
 
         self.set_layout(main_layout)
 
+        self.dataset_selected.emit("ABC")
+        self.__included_dataset.update_info("ABC")
+        self.__transformation.update_info("ABC")
+
     @Slot()
     def on_text_changed(self, text):
         self.dataset_selected.emit(text)
         self.__included_dataset.update_info(text)
+        self.__transformation.update_info(text)
 
 
 

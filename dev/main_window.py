@@ -49,7 +49,7 @@ class MainWindow(QWidget):
     def _on_dataset_selected(self, title):
         images = get_dataset_images(title)
         print(f"Selected {title}; loaded {len(images)} images")
-
+        
         
 
         # ici call knn avec le dataset
@@ -67,4 +67,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-6
