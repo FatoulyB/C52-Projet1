@@ -74,7 +74,7 @@ class DatasetInfoTransformation(QGroupBox):
             dataset = get_dataset_infos("ABC")
             return
 
-        self.__translated.set_text(str(dataset[2]))
+        self.__translated.text = str(dataset[2])
         self.__rotated.set_text(str(dataset[3]))
         self.__scaled.set_text(str(dataset[4]))
 
