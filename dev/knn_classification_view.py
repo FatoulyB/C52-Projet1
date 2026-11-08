@@ -126,6 +126,7 @@ class SingleTestBox(QGroupBox):
     def __init__(self, parent=None):
         super().__init__('Single test', parent)
         self.__test_images = {}
+        self.__dataset_name = ''
         self.__setup__single_test_box()
 
     def __setup__single_test_box(self):
@@ -161,14 +162,16 @@ class SingleTestBox(QGroupBox):
     def update_images(self, title):
         self.__img_list.clear()
         self.__image.clear()
+        self.__dataset_name = title
         self.__test_images = get_test_image(title)
         for nom in self.__test_images:
             self.__img_list.add_item(nom)
 
     @Slot()
     def on_classify_clicked(self):
-        #utiliser le Knn pour classifier l'image
-        self.classify_requested.emit()
+        self.classify_requested.emit(self.__dataset_name)
+
+
 
     def show_result(self, text):
         #changer le text pour afficher le resultat 
@@ -203,6 +206,7 @@ class KNNParamBox(QGroupBox):
 
 class KnnClassification(QWidget):
     dataset_selected = Signal(str)
+    classify_requested = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -215,6 +219,8 @@ class KnnClassification(QWidget):
 
         self.__data_set_box.dataset_selected.connect(self.__single_test_box.update_images)
         self.__single_test_box.update_images('ABC')
+
+        self.__single_test_box.classify_requested.connect(self.classify_requested.emit)
         
         left_layout = QVBoxLayout()
         left_layout.add_widget(self.__data_set_box)
@@ -236,4 +242,5 @@ class KnnClassification(QWidget):
         main_layout.add_layout(left_layout)
         main_layout.add_widget(self.__scatter, 1)
 
-                
+    def show_classification_result(self, text):
+        self.__single_test_box.show_result(text)

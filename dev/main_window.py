@@ -48,12 +48,19 @@ class MainWindow(QWidget):
 
         self.knn_view.dataset_selected.connect(self._on_dataset_selected)
 
+        self.knn_view.classify_requested.connect(self.on_classify_click)
+
         self.analyse_image = AnalyseImage()
 
 
 
-
+    @Slot(str)
     def _on_dataset_selected(self, title):
+        pass
+
+
+    @Slot(str)
+    def on_classify_click(self, title):
         images_and_shape = get_dataset_images(title)
         points = self.analyse_image.use_all_metrics(images_and_shape)
 
@@ -70,13 +77,11 @@ class MainWindow(QWidget):
 
         temp = np.array([1.5])
         
-        print(knn.unknown_point(temp))
-
         predicted_shape_id = knn.unknown_point(temp)
 
         result = shape_names[predicted_shape_id]
+        self.knn_view.show_classification_result(result)
 
-        print(result)
 
 
 def main():
