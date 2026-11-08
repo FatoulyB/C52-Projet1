@@ -9,7 +9,7 @@ from __feature__ import snake_case, true_property # type: ignore[import-not-foun
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import Qt, QSize, Signal,Slot
 from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import  (QApplication, QWidget, QListView, QTreeView,  
+from PySide6.QtWidgets import  (QSlider, QWidget, QListView, QTreeView,  
                                 QGroupBox, QLabel, QCheckBox, QPlainTextEdit,
                                 QGridLayout, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy,
                                 QMessageBox, QComboBox,QFormLayout, QPushButton)
@@ -25,8 +25,7 @@ assert "snake_case" in feature.info() and "true_property" in feature.info()
 
 from scatter_3d_viewer import QScatter3dViewer
 
-from db_dao import get_all_dataset_titles, get_dataset_infos
-
+from db_dao import get_all_dataset_titles, get_dataset_infos, get_test_image,get_test_image_names
 selected_dataset = get_dataset_infos("ABC")
 
 class DatasetInformation(QGroupBox):
@@ -54,7 +53,7 @@ class DatasetInformation(QGroupBox):
         self.__training_image_count.text = (str(dataset[6]))
         self.__test__image_count.text = (str(dataset[7]))
         self.__total__image_count.text = (str(dataset[8]))
-        
+
 
 class DatasetInfoTransformation(QGroupBox):
     def __init__(self, parent=None):
@@ -122,26 +121,58 @@ class DatasetBox(QGroupBox):
 
 
 class SingleTestBox(QGroupBox):
-    eventTriggered = Signal() 
+    classify_requested = Signal(str)
 
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super().__init__('Single test', parent)
+        self.__test_images = {}
         self.__setup__single_test_box()
-    
+
     def __setup__single_test_box(self):
-        self.__img_list = QComboBox() 
-        self.__image = QLabel() #transformer en Qpix comme dans GOL
-        self.__button_classify = QPushButton()
-        # self.__
+        self.__img_list = QComboBox()
+        self.__image = QLabel()
+        self.__button_classify = QPushButton("Classify")
+        self.__is_classified = QLabel("not classified")
+
+        self.__image.alignment = Qt.AlignCenter
+        self.__is_classified.alignment = Qt.AlignCenter
+
+        self.__img_list.currentTextChanged.connect(self.selected_img)
+        self.__button_classify.clicked.connect(self.on_classify_clicked)
+
         layout = QVBoxLayout()
-
-
         layout.add_widget(self.__img_list)
         layout.add_widget(self.__image)
         layout.add_widget(self.__button_classify)
-        
+        layout.add_widget(self.__is_classified)
+
         self.set_layout(layout)
-        
+
+    @Slot(str)
+    def selected_img(self, text):
+        if text not in self.__test_images:
+            return
+        self.__is_classified.text = 'not classified'
+        qimage, image, label_id = self.__test_images[text]
+        self.__image.pixmap = QPixmap.from_image(
+            qimage.scaled(150, 150, Qt.KeepAspectRatio, Qt.FastTransformation))
+
+    @Slot(str)
+    def update_images(self, title):
+        self.__img_list.clear()
+        self.__image.clear()
+        self.__test_images = get_test_image(title)
+        for nom in self.__test_images:
+            self.__img_list.add_item(nom)
+
+    @Slot()
+    def on_classify_clicked(self):
+        #utiliser le Knn pour classifier l'image
+        self.classify_requested.emit()
+
+    def show_result(self, text):
+        #changer le text pour afficher le resultat 
+        self.__is_classified.text = text
 
 class KNNParamBox(QGroupBox):
     eventTriggered = Signal() 
@@ -149,14 +180,18 @@ class KNNParamBox(QGroupBox):
     def __init__(self,parent=None):
         super().__init__('Knn Parameters',parent)
         self.__k = QLabel('k = ')
+        #self.__k_slider = QSlider()
         self.__max_dist = QLabel('Max dist = ')
+        #self.__max_dist_slider = QSlider()
 
         self.__k.alignment = Qt.AlignCenter
         self.__max_dist.alignment = Qt.AlignCenter
 
         layout = QVBoxLayout()
         layout.add_widget(self.__k)
+        #layout.add_widget(self.__k_slider)
         layout.add_widget(self.__max_dist)
+        #layout.add_widget(self.__max_dist_slider)
         self.set_layout(layout)
 
 
@@ -174,10 +209,13 @@ class KnnClassification(QWidget):
 
         self.__data_set_box = DatasetBox()
         self.__data_set_box.dataset_selected.connect(self.dataset_selected.emit)
-
+        
         self.__single_test_box = SingleTestBox()
         self.__knn_param_box = KNNParamBox()
 
+        self.__data_set_box.dataset_selected.connect(self.__single_test_box.update_images)
+        self.__single_test_box.update_images('ABC')
+        
         left_layout = QVBoxLayout()
         left_layout.add_widget(self.__data_set_box)
         left_layout.add_widget(self.__single_test_box)
