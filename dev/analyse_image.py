@@ -6,8 +6,6 @@ from PySide6.QtGui import  (QImage, QPixmap, QIcon, QPainter, QFont, QPen, QBrus
 
 
 class AnalyseImage:
-
-
     @staticmethod
     def calculer_perimetre(image):
         image = np.asarray(image, dtype=bool)
@@ -33,6 +31,15 @@ class AnalyseImage:
         if image.ndim < 2:
             raise ValueError("l'image doit avoir au moins deux dimensions")
         return np.sum(image, axis=(-2, -1))
+
+    @staticmethod
+    def area(image):
+        return np.sum(image)
+
+    @staticmethod
+    def centroid(image):
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+        return (np.sum(r * image), np.sum(c * image)) / AnalyseImage.area(image)
            
     @staticmethod
     def metric_simplification(image):
@@ -44,18 +51,39 @@ class AnalyseImage:
         
 
     @staticmethod
-    def metric_circle_filling():
+    def draw_circle(image, center, radius):
+        x, y = center
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+        
+        # approche finale
+        image[((r-y)**2 + (c-x)**2) <= radius**2] = 1
+        #     \________________________________/
+        #                      \___ cette série d'opérations 
+        #                           retournent une matrice de booléens
+        #                           qui sert de masque à l'assignation de 1
+
+
+    @staticmethod
+    def metric_circle_filling(image):
         # Prendre le nd array
-        #shape = AnalyseImage.png_to_nd_array()
         shape = np.array([[0,0,0,0,0,0,0,0,0],
+                         [0,0,0,0,0,0,0,0,0],
                          [0,0,1,1,1,1,1,0,0],
                          [0,0,1,1,1,1,1,0,0],
                          [0,0,1,1,1,1,1,0,0],
+                         [0,0,0,0,0,0,0,0,0],
                          [0,0,0,0,0,0,0,0,0]])
+
+
+        
+        
+        centroid = centroid(image)
+
+        np.hypot(image, centroid, where=True)
         
 
-        # analyser le ndarray
-        # trouver centroid avec fonction du prof 
+
+
         # tracer cercle fictif
         # verifier % de remplissage
 
