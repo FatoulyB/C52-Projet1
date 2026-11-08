@@ -34,12 +34,20 @@ class AnalyseImage:
 
     @staticmethod
     def area(image):
-        return np.sum(image)
+        return np.sum(image==0)
 
     @staticmethod
     def centroid(image):
         c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
-        return (np.sum(r * image), np.sum(c * image)) / AnalyseImage.area(image)
+
+        mask_image = (image == 0)
+
+        area = AnalyseImage.area(image)
+
+        centroid_x = np.sum(c[mask_image]) / area
+        centroid_y = np.sum(r[mask_image]) / area
+
+        return centroid_x, centroid_y
            
     @staticmethod
     def metric_simplification(image):
@@ -94,8 +102,25 @@ class AnalyseImage:
 
 
     @staticmethod
-    def metric_3():
-        pass
+    def metric_max_dist_over_avg_dist(image):
+        #prendre le centre et avoir un tableau avec les valeurs de distance du centroid
+        centroid_x, centroid_y = AnalyseImage.centroid(image)
+
+        distances = AnalyseImage.distance_between_points_from_centroid(image, centroid_x, centroid_y)
+
+        distance_avg = np.average(distances)
+        distance_max = np.max(distances)
+
+        return distance_max/distance_avg
+        
+
+
+    def distance_between_points_from_centroid(image, centroid_x, centroid_y):
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+
+        grille_distances = np.sqrt((c - centroid_x)**2 + (r - centroid_y)**2)
+
+        return grille_distances
 
 
     @staticmethod
