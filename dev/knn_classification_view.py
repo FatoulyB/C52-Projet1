@@ -24,6 +24,7 @@ assert "snake_case" in feature.info() and "true_property" in feature.info()
 # -----------------------------------------------------------------------------
 
 from scatter_3d_viewer import QScatter3dViewer
+from about import ABOUT_TEXT
 
 from db_dao import get_all_dataset_titles, get_dataset_infos, get_test_image,get_test_image_names
 selected_dataset = get_dataset_infos("ABC")
@@ -186,6 +187,8 @@ class KNNParamBox(QGroupBox):
         #self.__k_slider = QSlider()
         self.__max_dist = QLabel('Max dist = ')
         #self.__max_dist_slider = QSlider()
+        self.__about_button = QPushButton('About')
+        self.__about_button.clicked.connect(self.show_about)
 
         self.__k.alignment = Qt.AlignCenter
         self.__max_dist.alignment = Qt.AlignCenter
@@ -195,7 +198,11 @@ class KNNParamBox(QGroupBox):
         #layout.add_widget(self.__k_slider)
         layout.add_widget(self.__max_dist)
         #layout.add_widget(self.__max_dist_slider)
+        layout.add_widget(self.__about_button)
         self.set_layout(layout)
+    @Slot()
+    def show_about(self):
+        QMessageBox.about(self, 'KlustR KNN Classifier', ABOUT_TEXT)
 
 
     
