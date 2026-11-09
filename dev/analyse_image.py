@@ -27,14 +27,31 @@ class AnalyseImage:
         image = np.asarray(image)
         return np.sum(image, axis=(-2, -1))
 
+    
     @staticmethod
     def area(image):
-        return np.sum(image)
+        return np.sum(image == 0)
+
+    def centroid_tuple(image):
+        true_form = image == 0
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+        return (np.sum(r * true_form), np.sum(c * true_form)) / AnalyseImage.area(image)
+    
 
     @staticmethod
     def centroid(image):
+        #true_form = tout le blanc = false et le noir = true
+        true_form = image == 0
+        area = AnalyseImage.area(image)
+
+        if area == 0:
+            return 0.0, 0.0
+
         c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
-        return (np.sum(r * image), np.sum(c * image)) / AnalyseImage.area(image)
+        centroid_x = np.sum(c * true_form) / area
+        centroid_y = np.sum(r * true_form) / area
+
+        return centroid_x, centroid_y
 
     @staticmethod
     def draw_circle(image, center, radius):
@@ -44,8 +61,36 @@ class AnalyseImage:
         return image
 
     @staticmethod
+    def distance_between_points_from_centroid(image, centroid_x, centroid_y):
+        true_form = image == 0
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+
+        x_forme = c[true_form]
+        y_forme = r[true_form]
+
+        grille_distances = np.sqrt((x_forme - centroid_x)**2 + (y_forme - centroid_y)**2)
+        return grille_distances
+
+    @staticmethod
+    def metric_avg_dist_over_max_dist(image):
+        #prendre le centre et avoir un tableau avec les valeurs de distance du centroid
+        centroid_x, centroid_y = AnalyseImage.centroid(image)
+        grille_distances = AnalyseImage.distance_between_points_from_centroid(image, centroid_x, centroid_y)
+
+        if len(grille_distances) == 0:
+            print("NOOOOOO c egale a 0")
+            return 0.0
+
+        distance_avg = np.average(grille_distances)
+        distance_max = np.max(grille_distances)
+        print(distance_avg/distance_max)
+
+        return distance_avg / distance_max
+
+           
+    @staticmethod
     def metric_simplification(image):
-        aire = AnalyseImage.calculer_aire(image)
+        aire = AnalyseImage.area(image)
         perimetre = AnalyseImage.calculer_perimetre(image)
         return (4 * math.pi * aire) / (perimetre ** 2)
 
@@ -54,7 +99,7 @@ class AnalyseImage:
         shape = np.asarray(image) == 0
         indices = np.argwhere(shape)
 
-        center = AnalyseImage.centroid(shape)
+        center = AnalyseImage.centroid_tuple(shape)
 
         differences = indices - center
         distances = np.sqrt(np.sum(differences ** 2, axis=1))
@@ -71,24 +116,13 @@ class AnalyseImage:
 
 
     @staticmethod
-    def metric_3():
-        pass
-
-
-    @staticmethod
     def use_all_metrics(images_and_shape):
-        resultat = []
+        images, shape = images_and_shape    # images = liste de matrices 2D
 
-        images = np.asarray(images_and_shape[0])
-        shape = np.asarray(images_and_shape[1])
+        metric_1 = np.array([AnalyseImage.metric_simplification(img) for img in images])
+        metric_3 = np.array([AnalyseImage.metric_avg_dist_over_max_dist(img) for img in images])
 
-        metric_1 = AnalyseImage.metric_simplification(images)
-        # metric_2 = AnalyseImage.metric_circle_filling(images)
-        # metric_3 = AnalyseImage.metric_3(images)
-
-        resultat = [shape, metric_1]
-
-        return resultat
+        return [np.asarray(shape), metric_1, metric_3]
 
 
 
