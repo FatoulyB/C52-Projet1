@@ -25,33 +25,62 @@ class AnalyseImage:
         perimetres = np.sum(contour, axis=(-2, -1))
         return int(perimetres) if image.ndim == 2 else perimetres
 
-    @staticmethod
-    def calculer_aire(image):
-        image = np.asarray(image)
-        if image.ndim < 2:
-            raise ValueError("l'image doit avoir au moins deux dimensions")
-        return np.sum(image, axis=(-2, -1))
-
+    
     @staticmethod
     def area(image):
-        return np.sum(image==0)
+        return np.sum(image == 0)
 
+    # def centroid(image):
+    #     true_form = image == 0
+    #     c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+    #     return (np.sum(r * true_form), np.sum(c * true_form)) / AnalyseImage.area(image)
+    
     @staticmethod
     def centroid(image):
-        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
-
-        mask_image = (image == 0)
-
+        #true_form = tout le blanc = false et le noir = true
+        true_form = image == 0
         area = AnalyseImage.area(image)
 
-        centroid_x = np.sum(c[mask_image]) / area
-        centroid_y = np.sum(r[mask_image]) / area
+        if area == 0:
+            return 0.0, 0.0
+
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+        centroid_x = np.sum(c * true_form) / area
+        centroid_y = np.sum(r * true_form) / area
 
         return centroid_x, centroid_y
+
+    @staticmethod
+    def distance_between_points_from_centroid(image, centroid_x, centroid_y):
+        true_form = image == 0
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+
+        x_forme = c[true_form]
+        y_forme = r[true_form]
+
+        grille_distances = np.sqrt((x_forme - centroid_x)**2 + (y_forme - centroid_y)**2)
+        return grille_distances
+
+    @staticmethod
+    def metric_avg_dist_over_max_dist(image):
+        #prendre le centre et avoir un tableau avec les valeurs de distance du centroid
+        centroid_x, centroid_y = AnalyseImage.centroid(image)
+        grille_distances = AnalyseImage.distance_between_points_from_centroid(image, centroid_x, centroid_y)
+
+        if len(grille_distances) == 0:
+            print("NOOOOOO c egale a 0")
+            return 0.0
+
+        distance_avg = np.average(grille_distances)
+        distance_max = np.max(grille_distances)
+        print(distance_avg/distance_max)
+
+        return distance_avg / distance_max
+
            
     @staticmethod
     def metric_simplification(image):
-        aire = AnalyseImage.calculer_aire(image)
+        aire = AnalyseImage.area(image)
         perimetre = AnalyseImage.calculer_perimetre(image)
         if np.any(perimetre <= 0):
             raise ValueError("le perimetre doit etre positif")
@@ -102,41 +131,13 @@ class AnalyseImage:
 
 
     @staticmethod
-    def metric_max_dist_over_avg_dist(image):
-        #prendre le centre et avoir un tableau avec les valeurs de distance du centroid
-        centroid_x, centroid_y = AnalyseImage.centroid(image)
-
-        distances = AnalyseImage.distance_between_points_from_centroid(image, centroid_x, centroid_y)
-
-        distance_avg = np.average(distances)
-        distance_max = np.max(distances)
-
-        return distance_max/distance_avg
-        
-
-
-    def distance_between_points_from_centroid(image, centroid_x, centroid_y):
-        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
-
-        grille_distances = np.sqrt((c - centroid_x)**2 + (r - centroid_y)**2)
-
-        return grille_distances
-
-
-    @staticmethod
     def use_all_metrics(images_and_shape):
-        resultat = []
+        images, shape = images_and_shape    # images = liste de matrices 2D
 
-        images = np.asarray(images_and_shape[0])
-        shape = np.asarray(images_and_shape[1])
+        metric_1 = np.array([AnalyseImage.metric_simplification(img) for img in images])
+        metric_3 = np.array([AnalyseImage.metric_avg_dist_over_max_dist(img) for img in images])
 
-        metric_1 = AnalyseImage.metric_simplification(images)
-        # metric_2 = AnalyseImage.metric_circle_filling(images)
-        # metric_3 = AnalyseImage.metric_3(images)
-
-        resultat = [shape, metric_1]
-
-        return resultat
+        return [np.asarray(shape), metric_1, metric_3]
 
 
 
