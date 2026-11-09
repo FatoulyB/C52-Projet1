@@ -63,33 +63,3 @@ class KNN:
             return self.most_common_class(list_class[:-1])                                      # on relance la fonction avec  pour trouver le plus proche
 
         return ordered_values[np.argmax(ordered_counts)]                                        # retourne la valeur de la classe avec le nbre max de repetition
-
-
-
-
-
-
-
-
-
-
-def main():
-    knn = KNN(2, 30)
-    liste = [
-             [1, 30.0, 40.0, 100.0],
-             [1, 70.0, 80.0, 140.0],
-             [2, 60.0, 70.0, 130.0],
-             [1, 50.0, 60.0, 120.0],
-             [2, 40.0, 50.0, 110.0],
-             ]
-    knn.create_dataset(liste)
-
-    temp = np.array([35.0, 45.0, 105.0])
-    print(knn.unknown_point(temp))
-
-
-
-if __name__ == "__main__":
-    main()
-
-
