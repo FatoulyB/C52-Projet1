@@ -32,12 +32,6 @@ class AnalyseImage:
     def area(image):
         return np.sum(image == 0)
 
-    def centroid_tuple(image):
-        true_form = image == 0
-        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
-        return (np.sum(r * true_form), np.sum(c * true_form)) / AnalyseImage.area(image)
-    
-
     @staticmethod
     def centroid(image):
         #true_form = tout le blanc = false et le noir = true
@@ -78,12 +72,10 @@ class AnalyseImage:
         grille_distances = AnalyseImage.distance_between_points_from_centroid(image, centroid_x, centroid_y)
 
         if len(grille_distances) == 0:
-            print("NOOOOOO c egale a 0")
             return 0.0
 
         distance_avg = np.average(grille_distances)
         distance_max = np.max(grille_distances)
-        print(distance_avg/distance_max)
 
         return distance_avg / distance_max
 
@@ -99,10 +91,9 @@ class AnalyseImage:
         shape = np.asarray(image) == 0
         indices = np.argwhere(shape)
 
-        center = AnalyseImage.centroid_tuple(shape)
+        center = AnalyseImage.centroid(shape)
 
-        differences = indices - center
-        distances = np.sqrt(np.sum(differences ** 2, axis=1))
+        distances = np.sqrt(np.sum((indices - center) ** 2, axis=1))
         radius = np.max(distances)
 
         circle = AnalyseImage.draw_circle(np.zeros_like(shape), center, radius)
@@ -110,21 +101,18 @@ class AnalyseImage:
         circle_pixels = np.count_nonzero(circle)
         shape_pixels = np.count_nonzero(shape)
 
-        remaining_pixels = circle_pixels - shape_pixels
+        result = shape_pixels / circle_pixels
 
-        return remaining_pixels
+        return result
 
 
     @staticmethod
-    def use_all_metrics(images_and_shape):
-        images, shape = images_and_shape    # images = liste de matrices 2D
-
+    def use_all_metrics(shapes, images):
         metric_1 = np.array([AnalyseImage.metric_simplification(img) for img in images])
+        metric_2 = np.array([AnalyseImage.metric_circle_filling(img) for img in images])
         metric_3 = np.array([AnalyseImage.metric_avg_dist_over_max_dist(img) for img in images])
 
-        return [np.asarray(shape), metric_1, metric_3]
-
-
+        return [np.asarray(shapes), metric_1, metric_2, metric_3]
 
 # #TEST
 # masque = np.zeros((5, 5), dtype=bool)

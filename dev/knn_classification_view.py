@@ -122,7 +122,7 @@ class DatasetBox(QGroupBox):
 
 
 class SingleTestBox(QGroupBox):
-    classify_requested = Signal(str)
+    classify_requested = Signal(str, str)
 
     def __init__(self, parent=None):
         super().__init__('Single test', parent)
@@ -170,7 +170,7 @@ class SingleTestBox(QGroupBox):
 
     @Slot()
     def on_classify_clicked(self):
-        self.classify_requested.emit(self.__dataset_name)
+        self.classify_requested.emit(self.__dataset_name, self.__img_list.current_text)
 
 
 
@@ -213,7 +213,7 @@ class KNNParamBox(QGroupBox):
 
 class KnnClassification(QWidget):
     dataset_selected = Signal(str)
-    classify_requested = Signal(str)
+    classify_requested = Signal(str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
