@@ -8,28 +8,23 @@ from PySide6.QtGui import  (QImage, QPixmap, QIcon, QPainter, QFont, QPen, QBrus
 class AnalyseImage:
     @staticmethod
     def calculer_perimetre(image):
-        image = np.asarray(image, dtype=bool)
-        if image.ndim < 2:
-            raise ValueError("l'image doit avoir au moins deux dimensions")
+        image = image.astype(bool)
 
-        centre = image[..., 1:-1, 1:-1]
-        haut = image[..., :-2, 1:-1]
-        bas = image[..., 2:, 1:-1]
-        gauche = image[..., 1:-1, :-2]
-        droite = image[..., 1:-1, 2:]
+        centre = image[1:-1, 1:-1]
+        haut = image[:-2, 1:-1]
+        bas = image[2:,1:-1]
+        gauche = image[1:-1,:-2]
+        droite = image[1:-1, 2:]
 
         interieur = centre & haut & bas & gauche & droite
 
         contour = (interieur != centre)
 
-        perimetres = np.sum(contour, axis=(-2, -1))
-        return int(perimetres) if image.ndim == 2 else perimetres
+        return int(np.sum(contour))
 
     @staticmethod
     def calculer_aire(image):
         image = np.asarray(image)
-        if image.ndim < 2:
-            raise ValueError("l'image doit avoir au moins deux dimensions")
         return np.sum(image, axis=(-2, -1))
 
     @staticmethod
@@ -40,57 +35,39 @@ class AnalyseImage:
     def centroid(image):
         c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
         return (np.sum(r * image), np.sum(c * image)) / AnalyseImage.area(image)
-           
+
+    @staticmethod
+    def draw_circle(image, center, radius):
+        y, x = center
+        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+        image[((r-y)**2 + (c-x)**2) <= radius**2] = 1
+        return image
+
     @staticmethod
     def metric_simplification(image):
         aire = AnalyseImage.calculer_aire(image)
         perimetre = AnalyseImage.calculer_perimetre(image)
-        if np.any(perimetre <= 0):
-            raise ValueError("le perimetre doit etre positif")
         return (4 * math.pi * aire) / (perimetre ** 2)
-        
-
-    @staticmethod
-    def draw_circle(image, center, radius):
-        x, y = center
-        c, r = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
-        
-        # approche finale
-        image[((r-y)**2 + (c-x)**2) <= radius**2] = 1
-        #     \________________________________/
-        #                      \___ cette série d'opérations 
-        #                           retournent une matrice de booléens
-        #                           qui sert de masque à l'assignation de 1
-
 
     @staticmethod
     def metric_circle_filling(image):
-        # Prendre le nd array
-        shape = np.array([[0,0,0,0,0,0,0,0,0],
-                         [0,0,0,0,0,0,0,0,0],
-                         [0,0,1,1,1,1,1,0,0],
-                         [0,0,1,1,1,1,1,0,0],
-                         [0,0,1,1,1,1,1,0,0],
-                         [0,0,0,0,0,0,0,0,0],
-                         [0,0,0,0,0,0,0,0,0]])
+        shape = np.asarray(image) == 0
+        indices = np.argwhere(shape)
 
+        center = AnalyseImage.centroid(shape)
 
-        
-        
-        centroid = centroid(image)
+        differences = indices - center
+        distances = np.sqrt(np.sum(differences ** 2, axis=1))
+        radius = np.max(distances)
 
-        np.hypot(image, centroid, where=True)
-        
+        circle = AnalyseImage.draw_circle(np.zeros_like(shape), center, radius)
 
+        circle_pixels = np.count_nonzero(circle)
+        shape_pixels = np.count_nonzero(shape)
 
+        remaining_pixels = circle_pixels - shape_pixels
 
-        # tracer cercle fictif
-        # verifier % de remplissage
-
-        #retourner la valeur de la métrique
-
-
-        pass
+        return remaining_pixels
 
 
     @staticmethod
