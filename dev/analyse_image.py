@@ -113,17 +113,3 @@ class AnalyseImage:
         metric_3 = np.array([AnalyseImage.metric_avg_dist_over_max_dist(img) for img in images])
 
         return [np.asarray(shapes), metric_1, metric_2, metric_3]
-
-# #TEST
-# masque = np.zeros((5, 5), dtype=bool)
-# masque[1:4, 1:4] = True      # carré 3x3
-# print(AnalyseImage.calculer_perimetre(masque))   # attendu : 8
-
-# a = np.arange(25).reshape(5, 5)
-#print(a[1:-1, 1:-1])   # le centre
-#print(a[:-2, 1:-1])    # haut
-#print(a[2:5, 1:3])
-
-# masque = np.zeros((150, 150), dtype=bool)
-# masque[1:4, 1:4] = True
-# print(AnalyseImage.metrique_1(masque))
