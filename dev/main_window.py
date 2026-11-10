@@ -41,56 +41,65 @@ class MainWindow(QWidget):
         self.window_title = 'KlustR KNN Classifier'
 
         self.knn_view = KnnClassification()
+        self.knn_view.set_axis_titles('Simplification',
+                                      'Remplissage du cercle',
+                                      'Dist. moy. / dist. max')
 
         self.layout = QVBoxLayout(self)
-        
         self.layout.add_widget(self.knn_view) 
 
-        self.knn_view.dataset_selected.connect(self._on_dataset_selected)
+        self.knn = KNN(3, 5)
+        self.shape_names = {}
 
+        self.knn_view.dataset_selected.connect(self._on_dataset_selected)
         self.knn_view.classify_requested.connect(self.on_classify_click)
 
-        self.analyse_image = AnalyseImage()
+        self._on_dataset_selected("ABC")
+        
 
 
 
     @Slot(str)
     def _on_dataset_selected(self, title):
-        pass
+        images, labels = get_dataset_images(title)
+        labels = np.asarray(labels)
+        self.shape_names = shape_names_from_dataset(title)
+
+        # Phase 1 : métriques -> KNN -> graphique
+        _, m1, m2, m3 = AnalyseImage.use_all_metrics(labels, images)
+        metrics = np.column_stack((m1, m2, m3))
+
+        self.knn.clear()
+        self.knn.create_dataset(np.column_stack((labels, metrics)))
+
+        points_by_class = {
+            self.shape_names[int(label_id)]: metrics[labels == label_id]
+            for label_id in np.unique(labels)
+        }
+        self.knn_view.show_training_points(points_by_class)
 
 
-    @Slot(str)
+    @Slot(str, str)
     def on_classify_click(self, title, image_name):
-
         test_image = get_test_image(title)[image_name][1]
-        test_image = np.array([
+        test_point = np.array([
             AnalyseImage.metric_simplification(test_image),
             AnalyseImage.metric_circle_filling(test_image),
             AnalyseImage.metric_avg_dist_over_max_dist(test_image),
         ])
 
-
-        images_and_shape = get_dataset_images(title)
-        points = self.analyse_image.use_all_metrics(images_and_shape[1], images_and_shape[0])
-
-        shape_names = shape_names_from_dataset(title)
-
-        shape_name = points[0]
-        metric_results = np.column_stack((points[1], points[2], points[3]))
-
-        data = np.column_stack((shape_name, metric_results))
-
-        knn = KNN(3, 5)
-
-        knn.create_dataset(data)
-        
-        predicted_shape_id = knn.unknown_point(test_image)
+        predicted_shape_id = self.knn.unknown_point(test_point)
 
         if predicted_shape_id is None:
             result = "no match"
         else:
-            result = shape_names[predicted_shape_id]
+            result = self.shape_names[int(predicted_shape_id)]
+                
+        self.knn_view.show_test_point(test_point.reshape(1,3))
         self.knn_view.show_classification_result(result)
+        
+        
+
 
 
 
