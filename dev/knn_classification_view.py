@@ -181,23 +181,17 @@ class KNNParamBox(QGroupBox):
 
     def __init__(self,parent=None):
         super().__init__('Knn Parameters',parent)
-        self.__k = QLabel('k = ')
-        self.__max_dist = QLabel('Max dist = ')
-
-        self.__knn_param_box = KNNParamBox()
-        # Relayer les signaux vers MainWindow
-        self.__knn_param_box.k_changed.connect(self.k_changed.emit)
-        self.__knn_param_box.max_dist_changed.connect(self.max_dist_changed.emit)
-
+        self.__k = QLabel('k = 3')
+        self.__max_dist = QLabel('Max dist = 1.0')
         self.scroll_bar_k = QScrollBar(Qt.Horizontal)
-        self.scroll_bar_k.setRange(1, 25)
-        self.scroll_bar_k.setValue(3)
-        self.scroll_bar_k.value_changed.connect(self.on_scroll_change)
+        self.scroll_bar_k.set_range(1, 25)
+        self.scroll_bar_k.set_value(3)
+        self.scroll_bar_k.valueChanged.connect(self.on_scroll_change)
 
         self.scroll_bar_max_dist = QScrollBar(Qt.Horizontal)
-        self.scroll_bar_max_dist.setRange(0.1, 1.0)
-        self.scroll_bar_max_dist.setValue(1.0)
-        self.scroll_bar_max_dist.value_changed.connect(self.on_scroll_dist_change)
+        self.scroll_bar_max_dist.set_range(1, 10)
+        self.scroll_bar_max_dist.set_value(10)
+        self.scroll_bar_max_dist.valueChanged.connect(self.on_scroll_dist_change)
         self.__about_button = QPushButton('About')
         self.__about_button.clicked.connect(self.show_about)
         self.__k.alignment = Qt.AlignCenter
@@ -205,7 +199,9 @@ class KNNParamBox(QGroupBox):
 
         layout = QVBoxLayout()
         layout.add_widget(self.__k)
+        layout.add_widget(self.scroll_bar_k)
         layout.add_widget(self.__max_dist)
+        layout.add_widget(self.scroll_bar_max_dist)
         layout.add_widget(self.__about_button)
         self.set_layout(layout)
 
@@ -215,24 +211,28 @@ class KNNParamBox(QGroupBox):
 
     @Slot(int)
     def on_scroll_dist_change(self, value):
-        self.__max_dist.text = f'Max dist = {value}'
-        self.eventTriggered.emit()
+        max_dist = value / 10
+        self.__max_dist.text = f'Max dist = {max_dist:.1f}'
+        self.max_dist_changed.emit(max_dist)
 
     @Slot(int)
     def on_scroll_change(self, value):
         self.__k.text = f'k = {value}'
-        self.eventTriggered.emit()
-    @property
-    def k(self) -> int:
-        return self.__knn_param_box.k
+        self.k_changed.emit(value)
 
     @property
-    def max_dist(self) -> float:
-        return self.__knn_param_box.max_dist
+    def k(self):
+        return self.scroll_bar_k.value
+
+    @property
+    def max_dist(self):
+        return self.scroll_bar_max_dist.value / 10
 
 class KnnClassification(QWidget):
     dataset_selected = Signal(str)
     classify_requested = Signal(str, str)
+    k_changed = Signal(int)
+    max_dist_changed = Signal(float)
     TEST_SERIE_NAME = "Test"
 
     def __init__(self, parent=None):
@@ -243,6 +243,8 @@ class KnnClassification(QWidget):
         
         self.__single_test_box = SingleTestBox()
         self.__knn_param_box = KNNParamBox()
+        self.__knn_param_box.k_changed.connect(self.k_changed.emit)
+        self.__knn_param_box.max_dist_changed.connect(self.max_dist_changed.emit)
 
         self.__data_set_box.dataset_selected.connect(self.__single_test_box.update_images)
         self.__single_test_box.update_images('ABC')
@@ -265,6 +267,14 @@ class KnnClassification(QWidget):
         main_layout.add_layout(left_layout)
         main_layout.add_widget(self.__scatter, 1)
 
+    @property
+    def k(self):
+        return self.__knn_param_box.k
+
+    @property
+    def max_dist(self):
+        return self.__knn_param_box.max_dist
+
     def show_classification_result(self, text):
         self.__single_test_box.show_result(text)
 
@@ -282,4 +292,4 @@ class KnnClassification(QWidget):
     def show_test_point(self, point):
         self.__scatter.remove_serie(self.TEST_SERIE_NAME)
         self.__scatter.add_serie(point,
-                                 QColor('black'), "TEST_SERIE_NAME", 0.3)
+                                 QColor('black'), self.TEST_SERIE_NAME, 0.3)

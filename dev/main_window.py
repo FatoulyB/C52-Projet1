@@ -2,20 +2,12 @@ import sys
 
 
 # -----------------------------------------------------------------------------
-import PySide6 
+import PySide6
 from __feature__ import snake_case, true_property # type: ignore[import-not-found]
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtCore import Signal, Slot
-from PySide6.QtWidgets import  (QApplication, QWidget, QListView, QTreeView,  
-                                QGroupBox, QLabel, QCheckBox, QPlainTextEdit,
-                                QGridLayout, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy,
-                                QMessageBox)
-from PySide6.QtGui import  (QImage, QPixmap, QIcon, QPainter, QFont, QPen, QBrush, QColor, 
-                            QStandardItemModel, QStandardItem,
-                            QClipboard)
+from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QWidget
 
 # -----------------------------------------------------------------------------
 from shibokensupport import feature # type: ignore[import-not-found]

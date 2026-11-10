@@ -5,7 +5,7 @@ Eloi Vertefeuille
 Emille Larouche
 Félix Larose
 
-** mot de passe hardcoder (AAAaaa111) dans db_dao **
+** mot de passe hardcoder (AAAaaa123) dans db_dao **
 
 Il consiste à faire la classification automatique d'images 2D à partir de descripteurs de forme avec les concepts suivants :
 - Algorithme des K plus proches voisins (KNN) avec filtrage par distance maximale
@@ -31,7 +31,6 @@ Un effort d'abstraction a été fait pour ces points :
 - Découpage strict de l'architecture logicielle (Accès BDD / Analyse d'image / KNN / Interface graphique)
 - Généricité de la classe KNN (indépendante de la nature des métriques et adaptable aux dimensions choisies)
 - Normalisation et conditionnement uniforme de l'espace de solution dans la plage [0, 1]³
-Finalement, l’ensemble de données le plus complexe que nous avons été capable de résoudre est
-:
+Finalement, l’ensemble de données le plus complexe que nous avons été capable de résoudre est Zoo Large (peut prendre du temps sur une mauvaise machine)
 - 
 """
