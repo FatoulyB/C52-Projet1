@@ -2,8 +2,8 @@ import klustr_utils as ku
 import klustr_dao as kd
 from db_credential import PostgreSQLCredential
 
-credential = PostgreSQLCredential(password='AAAaaa111')
-# credential = PostgreSQLCredential(password='AAAaaa123')
+# credential = PostgreSQLCredential(password='AAAaaa111')
+credential = PostgreSQLCredential(password='AAAaaa123')
 dao = kd.PostgreSQLKlustRDAO(credential)
 
 def get_all_dataset_titles():

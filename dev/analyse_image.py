@@ -91,7 +91,8 @@ class AnalyseImage:
         shape = np.asarray(image) == 0
         indices = np.argwhere(shape)
 
-        center = AnalyseImage.centroid(shape)
+        centroid_x, centroid_y = AnalyseImage.centroid(image)
+        center = (centroid_y, centroid_x)
 
         distances = np.sqrt(np.sum((indices - center) ** 2, axis=1))
         radius = np.max(distances)
@@ -104,7 +105,6 @@ class AnalyseImage:
         result = shape_pixels / circle_pixels
 
         return result
-
 
     @staticmethod
     def use_all_metrics(shapes, images):

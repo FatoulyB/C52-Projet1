@@ -1,27 +1,34 @@
 ABOUT_TEXT = """Ce logiciel est le projet no 1 du cours C52.
 Il a été réalisé par :
-- __étudiant_1__
-- __étudiant_n__
-Il consiste à faire __quelque_chose__ avec les concepts suivants :
-- __concept_1__
-- __concept_n__
+Fatou Ly Basse
+Eloi Vert 
+Emille Larouche
+Félix Larose
+Il consiste à faire la classification automatique d'images 2D à partir de descripteurs de forme avec les concepts suivants :
+- Algorithme des K plus proches voisins (KNN) avec filtrage par distance maximale
+- Réduction de complexité par extraction de caractéristiques 3D
+- Visualisation interactive de l'espace de solution en 3D
+- Accès et requêtage de données relationnelles PostgreSQL via DAO
 Nos 3 descripteurs de forme sont :
-- __decripteur_1__
-- en __unité__ pour le domaine __domaine__
-- correspondant à __courte_description__
-- __decripteur_2__
-- en __unité__ pour le domaine __domaine__
-- correspondant à __courte_description__
-- __decripteur_3__
-- en __unité__ pour le domaine __domaine__
-- correspondant à __courte_description__
+- Indice de compacité (circularité)
+  - en ratio adimensionnel pour le domaine [0, 1]
+  - correspondant à la mesure de circularité normalisée basée sur le rapport (4 * π * Aire) / Périmètre²
+- Taux de remplissage du cercle englobant
+  - en ratio adimensionnel pour le domaine [0, 1]
+  - correspondant à la proportion de pixels occupés par la forme dans son cercle circumscrit minimal
+- Ratio de la distance moyenne sur la distance maximale au centroïde
+  - en ratio adimensionnel pour le domaine [0, 1]
+  - correspondant au rapport entre la distance moyenne des pixels au centroïde et la distance maximale au centroïde
 Plus précisément, ce laboratoire permet de mettre en pratique les notions de :
-- __notion_1__
-- __notion_n__
+- Traitement d'images numériques et calculs matriciels vectorisés avec NumPy (aires, périmètres, centroïdes)
+- Implémentation générique de l'algorithme de classification KNN et résolution des cas d'égalité/distances limites
+- Développement d'interfaces graphiques interactives et visualisations 3D avec PySide6 (Qt)
+- Persistance, extraction et décodage de données binaires PNG depuis PostgreSQL avec un pattern DAO
 Un effort d'abstraction a été fait pour ces points :
-- __point_1__
-- __point_n__
+- Découpage strict de l'architecture logicielle (Accès BDD / Analyse d'image / KNN / Interface graphique)
+- Généricité de la classe KNN (indépendante de la nature des métriques et adaptable aux dimensions choisies)
+- Normalisation et conditionnement uniforme de l'espace de solution dans la plage [0, 1]³
 Finalement, l’ensemble de données le plus complexe que nous avons été capable de résoudre est
 :
-- __nom_de_l_ensemble_de_données__
+- 
 """

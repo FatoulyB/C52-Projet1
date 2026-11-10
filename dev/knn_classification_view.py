@@ -1,5 +1,5 @@
 import sys
-
+from color_sequence import QColorSequence
 
 # -----------------------------------------------------------------------------
 import PySide6 
@@ -214,6 +214,7 @@ class KNNParamBox(QGroupBox):
 class KnnClassification(QWidget):
     dataset_selected = Signal(str)
     classify_requested = Signal(str, str)
+    TEST_SERIE_NAME = "Test"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -238,9 +239,6 @@ class KnnClassification(QWidget):
 
         self.__scatter = QScatter3dViewer(auto_rotate=True)
         self.__scatter.title = 'KlustR KNN Classification'
-        self.__scatter.axis_x.title = 'Axis 0'
-        self.__scatter.axis_y.title = 'Axis 1'
-        self.__scatter.axis_z.title = 'Axis 2'
         self.__scatter.axis_x.range = (0.0, 1.0)
         self.__scatter.axis_y.range = (0.0, 1.0)
         self.__scatter.axis_z.range = (0.0, 1.0)
@@ -251,3 +249,19 @@ class KnnClassification(QWidget):
 
     def show_classification_result(self, text):
         self.__single_test_box.show_result(text)
+
+    def set_axis_titles(self, x, y, z):
+        self.__scatter.axis_x.title = x
+        self.__scatter.axis_y.title = y
+        self.__scatter.axis_z.title = z
+
+    def show_training_points(self, points_by_class):
+        self.__scatter.clear()
+        QColorSequence.reset()
+        for class_name, points in points_by_class.items():
+            self.__scatter.add_serie(points, QColorSequence.next(), class_name, 0.15)
+
+    def show_test_point(self, point):
+        self.__scatter.remove_serie(self.TEST_SERIE_NAME)
+        self.__scatter.add_serie(point,
+                                 QColor('black'), "TEST_SERIE_NAME", 0.3)
