@@ -30,11 +30,7 @@ from db_dao import get_dataset_images, shape_names_from_dataset, get_test_image
 from knn import KNN
 import numpy as np
 
-
-
-
 class MainWindow(QWidget):
-
     def __init__(self):
         super().__init__()
 
@@ -55,9 +51,6 @@ class MainWindow(QWidget):
         self.knn_view.classify_requested.connect(self.on_classify_click)
 
         self._on_dataset_selected("ABC")
-        
-
-
 
     @Slot(str)
     def _on_dataset_selected(self, title):
@@ -97,10 +90,6 @@ class MainWindow(QWidget):
                 
         self.knn_view.show_test_point(test_point.reshape(1,3))
         self.knn_view.show_classification_result(result)
-        
-        
-
-
 
 
 def main():
@@ -108,7 +97,6 @@ def main():
 
     window = MainWindow()
     window.show()
-
 
     sys.exit(app.exec())
 

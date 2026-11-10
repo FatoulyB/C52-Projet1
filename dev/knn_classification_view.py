@@ -92,11 +92,9 @@ class DatasetBox(QGroupBox):
         self.__included_dataset = DatasetInformation()
         self.__transformation = DatasetInfoTransformation()
 
-
         self.__dataset_list.add_items(get_all_dataset_titles())
 
         self.__dataset_list.currentTextChanged.connect(self.on_text_changed)
-
 
         main_layout = QVBoxLayout()
         layout = QHBoxLayout()
@@ -118,7 +116,6 @@ class DatasetBox(QGroupBox):
         self.dataset_selected.emit(text)
         self.__included_dataset.update_info(text)
         self.__transformation.update_info(text)
-
 
 
 class SingleTestBox(QGroupBox):
@@ -172,10 +169,8 @@ class SingleTestBox(QGroupBox):
     def on_classify_clicked(self):
         self.classify_requested.emit(self.__dataset_name, self.__img_list.current_text)
 
-
-
+    @Slot()
     def show_result(self, text):
-        #changer le text pour afficher le resultat 
         self.__is_classified.text = text
 
 class KNNParamBox(QGroupBox):
@@ -184,9 +179,7 @@ class KNNParamBox(QGroupBox):
     def __init__(self,parent=None):
         super().__init__('Knn Parameters',parent)
         self.__k = QLabel('k = ')
-        #self.__k_slider = QSlider()
         self.__max_dist = QLabel('Max dist = ')
-        #self.__max_dist_slider = QSlider()
         self.__about_button = QPushButton('About')
         self.__about_button.clicked.connect(self.show_about)
 
@@ -195,21 +188,16 @@ class KNNParamBox(QGroupBox):
 
         layout = QVBoxLayout()
         layout.add_widget(self.__k)
-        #layout.add_widget(self.__k_slider)
         layout.add_widget(self.__max_dist)
-        #layout.add_widget(self.__max_dist_slider)
         layout.add_widget(self.__about_button)
         self.set_layout(layout)
+
     @Slot()
     def show_about(self):
         QMessageBox.about(self, 'KlustR KNN Classifier', ABOUT_TEXT)
-
-
     
     def __setup__knn_param_box(self):
         pass
-
-
 
 class KnnClassification(QWidget):
     dataset_selected = Signal(str)
@@ -235,7 +223,6 @@ class KnnClassification(QWidget):
         left_layout.add_widget(self.__single_test_box)
         left_layout.add_widget(self.__knn_param_box)
         left_layout.add_stretch()
-
 
         self.__scatter = QScatter3dViewer(auto_rotate=True)
         self.__scatter.title = 'KlustR KNN Classification'

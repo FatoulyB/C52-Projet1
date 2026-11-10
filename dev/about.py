@@ -1,9 +1,12 @@
 ABOUT_TEXT = """Ce logiciel est le projet no 1 du cours C52.
 Il a été réalisé par :
 Fatou Ly Basse
-Eloi Vert 
+Eloi Vertefeuille 
 Emille Larouche
 Félix Larose
+
+** mot de passe hardcoder (AAAaaa111) dans db_dao **
+
 Il consiste à faire la classification automatique d'images 2D à partir de descripteurs de forme avec les concepts suivants :
 - Algorithme des K plus proches voisins (KNN) avec filtrage par distance maximale
 - Réduction de complexité par extraction de caractéristiques 3D

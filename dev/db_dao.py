@@ -2,8 +2,7 @@ import klustr_utils as ku
 import klustr_dao as kd
 from db_credential import PostgreSQLCredential
 
-# credential = PostgreSQLCredential(password='AAAaaa111')
-credential = PostgreSQLCredential(password='AAAaaa123')
+credential = PostgreSQLCredential(password='AAAaaa111')
 dao = kd.PostgreSQLKlustRDAO(credential)
 
 def get_all_dataset_titles():
@@ -41,10 +40,6 @@ def shape_names_from_dataset(title):
         shape_names[shape[0]] = shape[1]
 
     return shape_names
-
-
-
-
 
 def get_test_image_names(title):
     results = dao.image_from_dataset(title, False)
