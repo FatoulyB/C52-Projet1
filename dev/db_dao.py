@@ -58,11 +58,3 @@ def get_test_image(title):
         image = ku.QtNpConvert.np_from_qimage(qimage)
         test[result[3]] = (qimage, image, result[0])
     return test
-
-
-
-if __name__ == "__main__":
-    images = get_dataset_images("ABC")
-    datasets = get_all_dataset_titles()
-    dataset = get_dataset_infos("Alpha-Full-Large")
-    pass
