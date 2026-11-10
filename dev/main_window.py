@@ -46,18 +46,26 @@ class MainWindow(QWidget):
                                       'Dist. moy. / dist. max')
 
         self.layout = QVBoxLayout(self)
-        self.layout.add_widget(self.knn_view) 
+        self.layout.add_widget(self.knn_view)
 
-        self.knn = KNN(3, 5)
+        self.knn = KNN(self.knn_view.k, self.knn_view.max_dist)
         self.shape_names = {}
 
         self.knn_view.dataset_selected.connect(self._on_dataset_selected)
         self.knn_view.classify_requested.connect(self.on_classify_click)
 
+        self.knn_view.k_changed.connect(self._on_k_changed)
+        self.knn_view.max_dist_changed.connect(self._on_max_dist_changed)
+
         self._on_dataset_selected("ABC")
-        
 
+    @Slot(int)
+    def _on_k_changed(self, k: int):
+        self.knn.k = k
 
+    @Slot(float)
+    def _on_max_dist_changed(self, max_dist: float):
+        self.knn.max_dist = max_dist
 
     @Slot(str)
     def _on_dataset_selected(self, title):
@@ -87,6 +95,9 @@ class MainWindow(QWidget):
             AnalyseImage.metric_circle_filling(test_image),
             AnalyseImage.metric_avg_dist_over_max_dist(test_image),
         ])
+
+        self.knn.k = self.knn_view.k
+        self.knn.max_dist = self.knn_view.max_dist
 
         predicted_shape_id = self.knn.unknown_point(test_point)
 

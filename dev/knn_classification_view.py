@@ -12,7 +12,7 @@ from PySide6.QtCore import Signal, Slot
 from PySide6.QtWidgets import  (QSlider, QWidget, QListView, QTreeView,  
                                 QGroupBox, QLabel, QCheckBox, QPlainTextEdit,
                                 QGridLayout, QHBoxLayout, QVBoxLayout, QSplitter, QSizePolicy,
-                                QMessageBox, QComboBox,QFormLayout, QPushButton)
+                                QMessageBox, QComboBox,QFormLayout, QPushButton, QScrollBar)
 from PySide6.QtGui import  (QImage, QPixmap, QIcon, QPainter, QFont, QPen, QBrush, QColor, 
                             QStandardItemModel, QStandardItem,
                             QClipboard)
@@ -179,35 +179,61 @@ class SingleTestBox(QGroupBox):
         self.__is_classified.text = text
 
 class KNNParamBox(QGroupBox):
-    eventTriggered = Signal() 
+    dataset_selected = Signal(str)
+    classify_requested = Signal(str, str)
+    k_changed = Signal(int)
+    max_dist_changed = Signal(float) 
 
     def __init__(self,parent=None):
         super().__init__('Knn Parameters',parent)
         self.__k = QLabel('k = ')
-        #self.__k_slider = QSlider()
         self.__max_dist = QLabel('Max dist = ')
-        #self.__max_dist_slider = QSlider()
+
+        self.__knn_param_box = KNNParamBox()
+        # Relayer les signaux vers MainWindow
+        self.__knn_param_box.k_changed.connect(self.k_changed.emit)
+        self.__knn_param_box.max_dist_changed.connect(self.max_dist_changed.emit)
+
+        self.scroll_bar_k = QScrollBar(Qt.Horizontal)
+        self.scroll_bar_k.setRange(1, 25)
+        self.scroll_bar_k.setValue(3)
+        self.scroll_bar_k.value_changed.connect(self.on_scroll_change)
+
+        self.scroll_bar_max_dist = QScrollBar(Qt.Horizontal)
+        self.scroll_bar_max_dist.setRange(0.1, 1.0)
+        self.scroll_bar_max_dist.setValue(1.0)
+        self.scroll_bar_max_dist.value_changed.connect(self.on_scroll_dist_change)
         self.__about_button = QPushButton('About')
         self.__about_button.clicked.connect(self.show_about)
-
         self.__k.alignment = Qt.AlignCenter
         self.__max_dist.alignment = Qt.AlignCenter
 
         layout = QVBoxLayout()
         layout.add_widget(self.__k)
-        #layout.add_widget(self.__k_slider)
         layout.add_widget(self.__max_dist)
-        #layout.add_widget(self.__max_dist_slider)
         layout.add_widget(self.__about_button)
         self.set_layout(layout)
+
     @Slot()
     def show_about(self):
         QMessageBox.about(self, 'KlustR KNN Classifier', ABOUT_TEXT)
 
+    @Slot(int)
+    def on_scroll_dist_change(self, value):
+        self.__max_dist.text = f'Max dist = {value}'
+        self.eventTriggered.emit()
 
-    
-    def __setup__knn_param_box(self):
-        pass
+    @Slot(int)
+    def on_scroll_change(self, value):
+        self.__k.text = f'k = {value}'
+        self.eventTriggered.emit()
+    @property
+    def k(self) -> int:
+        return self.__knn_param_box.k
+
+    @property
+    def max_dist(self) -> float:
+        return self.__knn_param_box.max_dist
 
 
 
